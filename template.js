@@ -377,7 +377,6 @@ function addEcommerceData(data, eventData, mappedData) {
     if (items) {
       currencyFromItems = items[0].currency;
 
-      mappedData.custom_data.contents = [];
       mappedData.custom_data.content_type =
         eventData['x-fb-cd-content_type'] || eventData.content_type || 'product';
 
@@ -402,6 +401,7 @@ function addEcommerceData(data, eventData, mappedData) {
       }
 
       const itemIdKey = data.itemIdKey ? data.itemIdKey : 'item_id';
+      const mapItemDataTo = data.mapItemDataTo || 'contents';
       items.forEach((d) => {
         const content = {};
         if (d[itemIdKey]) content.id = d[itemIdKey];
@@ -415,7 +415,14 @@ function addEcommerceData(data, eventData, mappedData) {
           valueFromItems += d.quantity ? d.quantity * content.item_price : content.item_price;
         }
 
-        mappedData.custom_data.contents.push(content);
+        if (mapItemDataTo === 'contents' || mapItemDataTo === 'both') {
+          mappedData.custom_data.contents = mappedData.custom_data.contents || [];
+          mappedData.custom_data.contents.push(content);
+        }
+        if (content.id && (mapItemDataTo === 'content_ids' || mapItemDataTo === 'both')) {
+          mappedData.custom_data.content_ids = mappedData.custom_data.content_ids || [];
+          mappedData.custom_data.content_ids.push(content.id);
+        }
       });
     }
 
