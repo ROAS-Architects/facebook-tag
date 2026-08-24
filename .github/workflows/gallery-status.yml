@@ -1,0 +1,38 @@
+# Fails while the template is not listed in the GTM Community Template Gallery.
+#
+# A red scheduled run is the notification: GitHub emails on scheduled-workflow
+# failure, so this nags daily from submission until the listing goes live, then
+# goes green and stops. No badge commits, no secrets, nothing to maintain.
+#
+# Owner and repo come from the GitHub context, so this file is identical across
+# every template repo we publish.
+name: gallery-status
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  listed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask the gallery whether this template is listed
+        run: |
+          URL="https://tagmanager.google.com/api/gallery/owners/${{ github.repository_owner }}/templates/${{ github.event.repository.name }}"
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$URL")
+          echo "GET $URL -> $STATUS"
+
+          case "$STATUS" in
+            200)
+              echo "Listed: https://tagmanager.google.com/gallery/#/owners/${{ github.repository_owner }}/templates/${{ github.event.repository.name }}"
+              ;;
+            404)
+              echo "::error::Not listed in the gallery yet. If it was submitted more than a few days ago, it was probably rejected: resubmit at tagmanager.google.com/gallery and check the LICENSE rule in LEARNINGS.md #58."
+              exit 1
+              ;;
+            *)
+              echo "::error::Unexpected status $STATUS from the gallery API. Treating as unknown rather than as listed."
+              exit 1
+              ;;
+          esac
