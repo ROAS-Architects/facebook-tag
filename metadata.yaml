@@ -1,8 +1,14 @@
-homepage: 'https://stape.io/'
-documentation: 'https://github.com/stape-io/facebook-tag'
+homepage: 'https://roasarchitects.com/'
+documentation: 'https://github.com/ROAS-Architects/facebook-tag'
 versions:
   - sha: f7a34753bc6092e8a032de564cae18280138b428
     changeNotes: Added an option to choose which parameter to use when automapping item data. Updated API to v26.
+  - sha: 2aa9a3ec4836e73972204c88fb456adc8a3f4b88
+    changeNotes: >-
+      Restored the BigQuery request/response logging removed upstream. Failure
+      diagnostics now land in response_body instead of being dropped, and values
+      that are already strings are no longer stringified twice. Schema and log
+      points documented in the README.
   - sha: 6769a59cb8e5a8fc6aa0d3c45a2f7b49d39dfff5
     changeNotes: Logging removal.
   - sha: 7d1a6ee57624225bc0e8540101ae6aff3505e090
