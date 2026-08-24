@@ -7,6 +7,7 @@ versions:
   - sha: 8b7332264228881d6c490fb37ccb7e3b5f1bb52d
   - sha: 0306f1382d7482087fd21b481732aa463eb4bcf5
   - sha: dfaa38e570092f863f4030755eea38716ce76afc
+  - sha: 6e971bdd6de2f65c9913df2158c7fa6eac423f6e
     changeNotes: >-
       Restored the BigQuery request/response logging removed upstream. The access
       token and app secret proof are now masked in logged URLs. Failure diagnostics
