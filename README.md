@@ -63,7 +63,7 @@ CREATE TABLE `your_project.your_dataset.your_table` (
 | `timestamp` | Milliseconds since epoch, taken when the row is built, not when the request was sent |
 | `tag_name` | Always `Facebook` for this template. Sibling tags write their own name, so one table can hold a whole container |
 | `type` | `Request`, `Response`, or `Message` |
-| `trace_id` | The container's `trace-id` request header. This is what joins a request row to its response row, and to rows written by other tags for the same incoming event |
+| `trace_id` | The container's `trace-id` request header, which joins a request row to its response row and to rows other tags wrote for the same event. **Only if your host sets that header.** Stape-hosted containers do; a self-hosted container behind your own proxy generally does not, and the column is then NULL for every tag, not just this one |
 | `event_name` | The Facebook event name, for example `Purchase` |
 | `request_method` | Always `POST` |
 | `request_url` | The Graph API endpoint, including the pixel ID. The access token and app secret proof are masked to first four and last four characters, so you can tell two credentials apart without holding either |

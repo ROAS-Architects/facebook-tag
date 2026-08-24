@@ -17,9 +17,7 @@ ___INFO___
   "categories": [
     "ADVERTISING",
     "ANALYTICS",
-    "CONVERSIONS",
-    "MARKETING",
-    "REMARKETING"
+    "CONVERSIONS"
   ],
   "brand": {
     "id": "github.com_ROAS-Architects",
