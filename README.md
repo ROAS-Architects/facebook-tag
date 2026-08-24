@@ -13,11 +13,12 @@ it sends and every response it gets back are written to a BigQuery table you own
 
 Stape's template is good work, and it is Apache 2.0, which is why a fork like
 this is possible at all. Between 2026-05-26 and 2026-07-01 they removed
-BigQuery logging from their server-side tag fleet as part of a wider refactor.
-For this template that is commit
-[`6769a59`](https://github.com/stape-io/facebook-tag/commit/6769a59). Console
-logging stayed. For a template that has to run in anybody's container, carrying
-a BigQuery dependency most installs never switch on is a fair thing to drop.
+the logging from their server-side tag fleet as part of a wider refactor. For
+this template that is commit
+[`6769a59`](https://github.com/stape-io/facebook-tag/commit/6769a59), which took
+out the BigQuery path and the console path together. The template ships with no
+logging at all today. For something that has to run in anybody's container,
+dropping a path most installs never switch on is a fair call.
 
 We need it, for a reason that is specific to how we work rather than a
 criticism of that decision. A server-side tag fails quietly. There is no browser
@@ -71,9 +72,9 @@ CREATE TABLE `your_project.your_dataset.your_table` (
 | `response_headers` | Facebook's response headers, as JSON |
 | `response_body` | Facebook's response body. On a failed or timed-out request this instead holds the failure text, since there is no response to record |
 
-> **This differs from upstream.** Upstream logs the endpoint verbatim, and the
-> Graph API takes the access token as a query parameter, so an upstream log table
-> holds live credentials in plain text. We mask them. See below.
+> **This is our change, not upstream's behaviour.** The logging we restored
+> recorded the endpoint verbatim, and the Graph API takes the access token as a
+> query parameter. Rather than restore that as it was, we mask it. See below.
 
 ### When rows are written
 
@@ -126,8 +127,8 @@ BigQuery Job User role.
 
 ## Three changes we made while restoring it
 
-Both are small, and both are visible in the diff against upstream's last logging
-version.
+All three are small, and all three are visible in the diff against the last
+upstream version that carried logging.
 
 1. **Failure text is written to `response_body`.** The original failure path put
    its diagnostics in fields called `Message` and `Reason`. Neither has a
@@ -136,8 +137,9 @@ version.
    `response_body` keeps it, and `response_body` is empty on exactly that path.
 2. **Credentials in `request_url` are masked.** The Graph API endpoint carries
    `access_token`, and `appsecret_proof` when it is enabled, as query
-   parameters. Logged verbatim, a log table becomes a credential store, and so
-   does any console output pasted into a support thread. We mask both to
+   parameters. The original logging recorded that endpoint as it was built, so
+   restoring it unchanged would have put a live credential in every Request row,
+   and in any console output pasted into a support thread. We mask both to
    `EAAG...ZZZZ`, keeping four characters at each end so two credentials are
    still distinguishable, and mask anything twelve characters or shorter whole.
    Masking happens once, in `log()`, so it covers every destination and any log
