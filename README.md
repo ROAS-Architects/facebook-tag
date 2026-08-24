@@ -65,15 +65,15 @@ CREATE TABLE `your_project.your_dataset.your_table` (
 | `trace_id` | The container's `trace-id` request header. This is what joins a request row to its response row, and to rows written by other tags for the same incoming event |
 | `event_name` | The Facebook event name, for example `Purchase` |
 | `request_method` | Always `POST` |
-| `request_url` | The Graph API endpoint, including the pixel ID. **It also contains the access token as a query parameter** |
+| `request_url` | The Graph API endpoint, including the pixel ID. The access token and app secret proof are masked to first four and last four characters, so you can tell two credentials apart without holding either |
 | `request_body` | The full event payload sent to Facebook, as JSON |
 | `response_status_code` | Facebook's HTTP status. Empty when the request never completed |
 | `response_headers` | Facebook's response headers, as JSON |
 | `response_body` | Facebook's response body. On a failed or timed-out request this instead holds the failure text, since there is no response to record |
 
-> **Read `request_url` before you grant access to this table.** The access token
-> is in it. Treat the table as a credential store, or write a view that strips
-> the query string and grant access to the view.
+> **This differs from upstream.** Upstream logs the endpoint verbatim, and the
+> Graph API takes the access token as a query parameter, so an upstream log table
+> holds live credentials in plain text. We mask them. See below.
 
 ### When rows are written
 
@@ -124,7 +124,7 @@ default credentials, so the container's own service account needs
 `bigquery.tables.updateData` on the table. Streaming inserts do not need the
 BigQuery Job User role.
 
-## Two changes we made while restoring it
+## Three changes we made while restoring it
 
 Both are small, and both are visible in the diff against upstream's last logging
 version.
@@ -134,7 +134,16 @@ version.
    column, so with `ignoreUnknownValues` a timeout landed a row with the
    diagnostics gone and every response field empty. Folding the text into
    `response_body` keeps it, and `response_body` is empty on exactly that path.
-2. **Values that are already strings are not stringified again.**
+2. **Credentials in `request_url` are masked.** The Graph API endpoint carries
+   `access_token`, and `appsecret_proof` when it is enabled, as query
+   parameters. Logged verbatim, a log table becomes a credential store, and so
+   does any console output pasted into a support thread. We mask both to
+   `EAAG...ZZZZ`, keeping four characters at each end so two credentials are
+   still distinguishable, and mask anything twelve characters or shorter whole.
+   Masking happens once, in `log()`, so it covers every destination and any log
+   point added later. The request itself is unchanged and still carries the real
+   token.
+3. **Values that are already strings are not stringified again.**
    `sendHttpRequest` hands back `result.body` as a string, and stringifying it a
    second time wraps it in escaped quotes, which stops `JSON_VALUE()` from
    parsing rows that parse fine for other tags writing to the same table.

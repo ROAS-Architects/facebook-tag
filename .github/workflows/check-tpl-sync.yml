@@ -1,4 +1,4 @@
-name: check-tpl-sync
+name: checks
 
 on:
   push:
@@ -10,3 +10,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 scripts/check-tpl-sync.py
+      - run: node scripts/test-redact.js

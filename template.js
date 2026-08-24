@@ -850,12 +850,46 @@ function isConsentGivenOrNotRequired(data, eventData) {
   return xGaGcs[2] === '1';
 }
 
+function redactUrlSecrets(url) {
+  let redacted = url;
+
+  ['access_token', 'appsecret_proof'].forEach((param) => {
+    const marker = param + '=';
+    const parts = redacted.split(marker);
+    if (parts.length < 2) return;
+
+    const rest = parts[1];
+    const end = rest.indexOf('&');
+    const value = end === -1 ? rest : rest.substring(0, end);
+    const tail = end === -1 ? '' : rest.substring(end);
+
+    redacted = parts[0] + marker + maskSecret(value) + tail;
+  });
+
+  return redacted;
+}
+
+function maskSecret(value) {
+  // Keep enough to tell two credentials apart, never enough to use one. Short
+  // values are masked whole: 8 shown characters of a 12-character secret is not
+  // a redaction.
+  if (value.length <= 12) return '[redacted]';
+  return value.substring(0, 4) + '...' + value.substring(value.length - 4);
+}
+
 function log(rawDataToLog) {
   const logDestinationsHandlers = {};
   if (determinateIsLoggingEnabled()) logDestinationsHandlers.console = logConsole;
   if (determinateIsLoggingEnabledForBigQuery()) logDestinationsHandlers.bigQuery = logToBigQuery;
 
   rawDataToLog.TraceId = getRequestHeader('trace-id');
+
+  // The Graph API endpoint carries the access token, and the app secret proof,
+  // as query parameters. Logged verbatim they turn a log table into a
+  // credential store. Mask them everywhere we log, console included.
+  if (getType(rawDataToLog.RequestUrl) === 'string') {
+    rawDataToLog.RequestUrl = redactUrlSecrets(rawDataToLog.RequestUrl);
+  }
 
   const keyMappings = {
     // No transformation for Console is needed.
