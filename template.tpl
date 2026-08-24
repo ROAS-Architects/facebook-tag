@@ -1997,6 +1997,17 @@ function log(rawDataToLog) {
         const mappedKey = mapping[key] || key;
         dataToLog[mappedKey] = rawDataToLog[key];
       }
+
+      // BigQuery is inserted with ignoreUnknownValues, so any key without a
+      // column is dropped silently. Message and Reason have no column, and on
+      // the failure path they are the only diagnostics there are. Fold them
+      // into response_body, which is empty exactly when a request failed.
+      if (getType(dataToLog.response_body) === 'undefined') {
+        const notes = [];
+        if (rawDataToLog.Message) notes.push(rawDataToLog.Message);
+        if (rawDataToLog.Reason) notes.push(rawDataToLog.Reason);
+        if (notes.length) dataToLog.response_body = notes.join(' ');
+      }
     }
 
     handler(dataToLog);
@@ -2016,8 +2027,13 @@ function logToBigQuery(dataToLog) {
 
   dataToLog.timestamp = getTimestampMillis();
 
+  // Stringify only what is not already a string. sendHttpRequest returns
+  // result.body as a string, so an unconditional stringify double-encodes it
+  // and JSON_VALUE() stops parsing rows that parse fine for sibling tags.
   ['request_body', 'response_headers', 'response_body'].forEach((p) => {
-    dataToLog[p] = JSON.stringify(dataToLog[p]);
+    if (getType(dataToLog[p]) !== 'string') {
+      dataToLog[p] = JSON.stringify(dataToLog[p]);
+    }
   });
 
   BigQuery.insert(connectionInfo, [dataToLog], { ignoreUnknownValues: true });
