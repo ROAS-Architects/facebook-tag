@@ -152,11 +152,15 @@ upstream version that carried logging.
 
 ## How this fork tracks upstream
 
-- `main` is a plain mirror of `stape-io/facebook-tag`. We do not commit to it.
-- `bq-logging` is `main` plus the restored logging. `git diff main..bq-logging`
-  is the whole of what we changed, and is the only fork documentation there is.
-- Following an upstream release is `git rebase main` on `bq-logging`. We sync
-  when we want something upstream has shipped, not on a schedule.
+- `upstream-mirror` is a plain mirror of `stape-io/facebook-tag`. We never
+  commit to it.
+- `main` is `upstream-mirror` plus the restored logging. So
+  `git diff upstream-mirror..main` is the whole of what we changed, and is the
+  only fork documentation there is. The template sits on `main` because the
+  Community Gallery requires every resource to be on that branch.
+- Following an upstream release: fetch upstream, fast-forward `upstream-mirror`,
+  then rebase `main` onto it. We sync when we want something upstream has
+  shipped, not on a schedule.
 - CI checks that `template.tpl`'s embedded JS still matches `template.js`, and
   that the logging is still there. It is the one way a rebase can quietly undo
   the entire point of this repo.
