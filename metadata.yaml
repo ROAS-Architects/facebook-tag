@@ -3,11 +3,7 @@ documentation: 'https://github.com/ROAS-Architects/facebook-tag'
 versions:
   - sha: f7a34753bc6092e8a032de564cae18280138b428
     changeNotes: Added an option to choose which parameter to use when automapping item data. Updated API to v26.
-  - sha: 2aa9a3ec4836e73972204c88fb456adc8a3f4b88
-  - sha: 8b7332264228881d6c490fb37ccb7e3b5f1bb52d
-  - sha: 0306f1382d7482087fd21b481732aa463eb4bcf5
-  - sha: dfaa38e570092f863f4030755eea38716ce76afc
-  - sha: 6e971bdd6de2f65c9913df2158c7fa6eac423f6e
+  - sha: 45d53438fd1f0743079f22702f2a853655d76111
     changeNotes: >-
       Restored the BigQuery request/response logging removed upstream. The access
       token and app secret proof are now masked in logged URLs. Failure diagnostics
