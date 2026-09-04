@@ -13,7 +13,7 @@ ___INFO___
   "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
-  "displayName": "Facebook CAPI + BQ",
+  "displayName": "Facebook CAPI + BQ by ROAS Architects",
   "categories": [
     "ADVERTISING",
     "ANALYTICS",
