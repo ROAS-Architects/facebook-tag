@@ -1,4 +1,4 @@
-# Facebook Conversions API Tag for GTM Server Side, with BigQuery logging
+# Facebook CAPI + BQ by ROAS Architects
 
 A fork of [`stape-io/facebook-tag`](https://github.com/stape-io/facebook-tag),
 maintained by [ROAS Architects](https://roasarchitects.com), that keeps the

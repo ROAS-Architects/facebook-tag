@@ -1,8 +1,10 @@
 homepage: 'https://roasarchitects.com/?utm_source=gtm-gallery&utm_medium=referral&utm_campaign=facebook-capi-bq'
 documentation: 'https://github.com/ROAS-Architects/facebook-tag'
 versions:
-  - sha: f7a34753bc6092e8a032de564cae18280138b428
-    changeNotes: Added an option to choose which parameter to use when automapping item data. Updated API to v26.
+  - sha: 274635bb2767993fd6ce3656b9aedd7bc17c6131
+    changeNotes: >-
+      Renamed the template to "Facebook CAPI + BQ by ROAS Architects" so the
+      gallery listing names its submitter. No functional change.
   - sha: 45d53438fd1f0743079f22702f2a853655d76111
     changeNotes: >-
       Restored the BigQuery request/response logging removed upstream. The access
@@ -10,6 +12,8 @@ versions:
       land in response_body instead of being dropped, and values that are already
       strings are no longer stringified twice. Schema and log points documented in
       the README.
+  - sha: f7a34753bc6092e8a032de564cae18280138b428
+    changeNotes: Added an option to choose which parameter to use when automapping item data. Updated API to v26.
   - sha: 6769a59cb8e5a8fc6aa0d3c45a2f7b49d39dfff5
     changeNotes: Logging removal.
   - sha: 7d1a6ee57624225bc0e8540101ae6aff3505e090

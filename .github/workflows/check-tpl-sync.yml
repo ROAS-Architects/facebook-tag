@@ -9,5 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The guard reads template.tpl at an older commit; a shallow clone has none.
+          fetch-depth: 0
       - run: python3 scripts/check-tpl-sync.py
       - run: node scripts/test-redact.js
